@@ -5,4 +5,4 @@ e dar os seguintes comando depois de instalarem o CMake
 "pip install dlib"
 "pip install scipy
 "pip install face_recognition opencv-python"
-"pip install git+https://github.com/ageitgey/face_recognition_models"
+"pip install git+https://github.com/ageitgey/face_recognition_models" // esse deu erro
