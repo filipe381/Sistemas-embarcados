@@ -1,6 +1,7 @@
 # Projeto-Sistemas-embarcados
-glr para vcs rodarem esse projeto na maquina de vcs vcs precisarão instalar o CMake e adicionar o path durante a instalação.
+glr para vcs rodarem esse projeto na maquina de vcs vcs precisarão instalar o python, CMake e adicionar o path durante a instalação.
 e dar os seguintes comando depois de instalarem o CMake 
+para executar um programa ponha no terminal "python nome do arquivo"
 "pip install opencv-python"
 "pip install dlib"
 "pip install scipy
