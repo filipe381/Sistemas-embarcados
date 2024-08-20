@@ -1,9 +1,18 @@
-# Projeto-Sistemas-embarcados
-glr para vcs rodarem esse projeto na maquina de vcs vcs precisarão instalar o python, CMake e adicionar o path durante a instalação.
-e dar os seguintes comando depois de instalarem o CMake 
-para executar um programa ponha no terminal "python nome do arquivo"
-"pip install opencv-contrib-python"
-"pip install dlib"
-"pip install scipy
+# Projeto Sistemas Embarcados
+### Primeiros Passos
+Primeiramente, para o projeto funcionar, deve se instalar o *Python*, *CMake* e adicionar o path durante a instalação.
+
+### Depois, dê os seguintes comandos após instalarem o CMake e clonarem o repositório:
+```
+1. pip install opencv-contrib-python
+2. pip install dlib
+3. pip install scipy
+```
+
+- Depois, ***deve*** se realizar esse comando antes de rodar um programa:
+```
+python [nome do arquivo]
+```
+### Work in progress
 "pip install face_recognition opencv-python"
 "pip install git+https://github.com/ageitgey/face_recognition_models" // esse deu erro
