@@ -4,11 +4,14 @@ Primeiramente, para o projeto funcionar, deve se instalar o *Python*, *CMake* e 
 
 ### Depois, dê os seguintes comandos após instalarem o CMake e clonarem o repositório:
 ```
-1. pip install opencv-contrib-python
-2. pip install dlib
-3. pip install scipy
+pip install opencv-contrib-python
 ```
-
+```
+pip install dlib
+```
+```
+pip install scipy
+```
 - Depois, ***deve*** se realizar esse comando antes de rodar um programa:
 ```
 python [nome do arquivo]
