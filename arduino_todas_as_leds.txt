@@ -1,0 +1,90 @@
+// Pinos do Arduino utilizados
+int PinTrigger = 5;     // pino usado para disparar os pulsos do sensor
+int PinEcho = 6;        // pino usado para ler a saída do sensor
+int PinLEDverde = 2;    // pino usado pelo LED verde
+int PinLEDvermelho = 3;
+int PinLEDazul = 4;    // pino usado pelo LED verde
+int PinBuzzer = A0;     // pino usado pelo buzzer
+
+// Constantes
+const int atraso = 200;       // tempo de espera do loop
+const int LimiteLEDazul = 45;
+const int LimiteLEDvermelho = 35;
+const int LimiteLEDverde = 25; // Limite de distância para acender o LED verde
+const int LimiteBuzzer = 15;   // Limite de distância para ativar o buzzer
+const float velocidadeSom_mpus = 0.000340;  // em metros por microsegundo
+
+// Inicialização
+void setup() {
+  pinMode(PinTrigger, OUTPUT);      // configura pino Trigger como saída
+  digitalWrite(PinTrigger, LOW);    // pino Trigger - nível baixo
+  pinMode(PinEcho, INPUT);          // configura pino ECHO como entrada
+  pinMode(PinLEDverde, OUTPUT);
+  pinMode(PinLEDazul, OUTPUT);
+  pinMode(PinLEDvermelho, OUTPUT);   
+  pinMode(PinBuzzer, OUTPUT);       // configura pino Buzzer como saída
+  Serial.begin(9600);               // inicializa monitor serial 9600 Bps (debug)
+  desligaSinais();                  // Garante que o LED e o buzzer estejam desligados inicialmente
+}
+
+// Loop principal
+void loop() {
+  float Distancia = MedeDistancia();
+  
+  if (Distancia <= LimiteBuzzer) {
+    tone(PinBuzzer, 1000); 
+    digitalWrite(PinLEDverde, LOW); 
+    digitalWrite(PinLEDvermelho, LOW);
+    digitalWrite(PinLEDazul, LOW);
+  } else if (Distancia <= LimiteLEDverde) {
+    digitalWrite(PinLEDverde, HIGH);
+    digitalWrite(PinLEDvermelho, LOW);
+    digitalWrite(PinLEDazul, LOW);
+    noTone(PinBuzzer); 
+  } else if (Distancia <= LimiteLEDvermelho) {
+    digitalWrite(PinLEDverde, LOW);
+    digitalWrite(PinLEDvermelho, HIGH);
+    digitalWrite(PinLEDazul, LOW);
+    noTone(PinBuzzer);
+  } else if (Distancia <= LimiteLEDazul){
+    digitalWrite(PinLEDverde, LOW);
+    digitalWrite(PinLEDvermelho, LOW);
+    digitalWrite(PinLEDazul, HIGH);
+    noTone(PinBuzzer);
+  } else {
+    desligaSinais();
+  }
+
+  Serial.print("Distância em centímetros: ");  // mostra no monitor serial
+  Serial.print(Distancia);                     // mostra a distância medida
+  Serial.println();
+  delay(atraso);                               // tempo de atraso
+}
+
+// Envia um pulso de 10 µs
+void DisparaPulsoUltrassonico() {
+  digitalWrite(PinTrigger, HIGH);  // pulso alto de Trigger
+  delayMicroseconds(10);           // atraso de 10 microsegundos
+  digitalWrite(PinTrigger, LOW);   // pulso baixo de Trigger
+}
+
+// Calcula a distância com base no tempo do pulso
+float CalculaDistancia(float tempo_us) {
+  return (tempo_us * velocidadeSom_mpus) / 2;  // calcula distância em metros
+}
+
+// Mede a distância do sensor ultrassônico
+float MedeDistancia() {
+  float TempoEcho = 0;                       // variável tempo do eco
+  DisparaPulsoUltrassonico();                // dispara pulso ultrassônico
+  TempoEcho = pulseIn(PinEcho, HIGH);        // mede duração do pulso HIGH de eco em microsegundos
+  return CalculaDistancia(TempoEcho) * 100;  // retorna distância em cm
+}
+
+// Desliga o LED verde e o buzzer
+void desligaSinais() {
+  digitalWrite(PinLEDverde, LOW);
+  noTone(PinBuzzer);
+  digitalWrite(PinLEDvermelho, LOW);
+  digitalWrite(PinLEDazul, LOW);
+}
