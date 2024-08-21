@@ -2,6 +2,8 @@ import cv2  # Biblioteca para captura e processamento de vídeo/imagens
 import face_recognition  # Biblioteca para reconhecimento facial
 import numpy as np  # Biblioteca para operações com arrays
 
+
+
 def capture_reference_image(filename="reference.jpg"):
     # Inicializa a captura de vídeo da webcam
     cap = cv2.VideoCapture(0)
