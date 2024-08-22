@@ -12,9 +12,16 @@ pip install dlib
 ```
 pip install scipy
 ```
+```
+pip install python-telegram-bot  
+```
 - Depois, ***deve*** se realizar esse comando antes de rodar um programa:
 ```
 python [nome do arquivo]
+```
+- Para acessar o bot do telegram, mande um oi pro bot antes de testar o codigo:
+```
+https://t.me/Superisor_bot
 ```
 ### Work in progress
 "pip install face_recognition opencv-python"
