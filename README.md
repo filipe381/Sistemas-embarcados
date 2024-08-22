@@ -15,6 +15,15 @@ pip install scipy
 ```
 pip install python-telegram-bot  
 ```
+```
+pip install --upgrade setuptools
+```
+```
+pip install face_recognition opencv-python
+```
+```
+pip install git+https://github.com/ageitgey/face_recognition_models
+```
 - Depois, ***deve*** se realizar esse comando antes de rodar um programa:
 ```
 python [nome do arquivo]
@@ -24,5 +33,4 @@ python [nome do arquivo]
 https://t.me/Superisor_bot
 ```
 ### Work in progress
-"pip install face_recognition opencv-python"
-"pip install git+https://github.com/ageitgey/face_recognition_models" // esse deu erro
+
