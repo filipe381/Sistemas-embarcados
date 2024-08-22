@@ -10,6 +10,9 @@ pip install cmake
 pip install dlib
 ```
 ```
+pip install imutils
+```
+```
 pip install opencv-contrib-python
 ```
 ```
