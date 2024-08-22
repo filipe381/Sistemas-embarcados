@@ -4,6 +4,9 @@ Primeiramente, para o projeto funcionar, deve se instalar o *Python*, *CMake* e 
 
 ### Depois, dê os seguintes comandos após instalarem o CMake e clonarem o repositório:
 ```
+pip install cmake
+```
+```
 pip install dlib
 ```
 ```
