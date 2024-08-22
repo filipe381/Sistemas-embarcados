@@ -1,30 +1,30 @@
 // Pinos do Arduino utilizados
-int PinTrigger = 5;     // pino usado para disparar os pulsos do sensor
-int PinEcho = 6;        // pino usado para ler a saída do sensor
-int PinLEDverde = 2;    // pino usado pelo LED verde
+int PinTrigger = 5;    
+int PinEcho = 6;        
+int PinLEDverde = 2;   
 int PinLEDvermelho = 3;
-int PinLEDazul = 4;    // pino usado pelo LED verde
-int PinBuzzer = A0;     // pino usado pelo buzzer
+int PinLEDazul = 4;    
+int PinBuzzer = A0;     
 
 // Constantes
-const int atraso = 200;       // tempo de espera do loop
+const int atraso = 200;       
 const int LimiteLEDazul = 45;
 const int LimiteLEDvermelho = 35;
-const int LimiteLEDverde = 25; // Limite de distância para acender o LED verde
-const int LimiteBuzzer = 15;   // Limite de distância para ativar o buzzer
-const float velocidadeSom_mpus = 0.000340;  // em metros por microsegundo
+const int LimiteLEDverde = 25; 
+const int LimiteBuzzer = 15;   
+const float velocidadeSom_mpus = 0.000340;  
 
 // Inicialização
 void setup() {
-  pinMode(PinTrigger, OUTPUT);      // configura pino Trigger como saída
-  digitalWrite(PinTrigger, LOW);    // pino Trigger - nível baixo
-  pinMode(PinEcho, INPUT);          // configura pino ECHO como entrada
+  pinMode(PinTrigger, OUTPUT);      
+  digitalWrite(PinTrigger, LOW);    
+  pinMode(PinEcho, INPUT);         
   pinMode(PinLEDverde, OUTPUT);
   pinMode(PinLEDazul, OUTPUT);
   pinMode(PinLEDvermelho, OUTPUT);   
-  pinMode(PinBuzzer, OUTPUT);       // configura pino Buzzer como saída
-  Serial.begin(9600);               // inicializa monitor serial 9600 Bps (debug)
-  desligaSinais();                  // Garante que o LED e o buzzer estejam desligados inicialmente
+  pinMode(PinBuzzer, OUTPUT);       
+  Serial.begin(9600);               
+  desligaSinais();                  
 }
 
 // Loop principal
@@ -55,10 +55,10 @@ void loop() {
     desligaSinais();
   }
 
-  Serial.print("Distância em centímetros: ");  // mostra no monitor serial
-  Serial.print(Distancia);                     // mostra a distância medida
+  Serial.print("Distância em centímetros: "); 
+  Serial.print(Distancia);                     
   Serial.println();
-  delay(atraso);                               // tempo de atraso
+  delay(atraso);                               
 }
 
 // Envia um pulso de 10 µs
@@ -81,7 +81,7 @@ float MedeDistancia() {
   return CalculaDistancia(TempoEcho) * 100;  // retorna distância em cm
 }
 
-// Desliga o LED verde e o buzzer
+
 void desligaSinais() {
   digitalWrite(PinLEDverde, LOW);
   noTone(PinBuzzer);
