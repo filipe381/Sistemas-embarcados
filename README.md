@@ -31,7 +31,10 @@ pip install face_recognition opencv-python
 pip install git+https://github.com/ageitgey/face_recognition_models
 ```
 ```
-pip install cmake dlib imutils opencv-contrib-python scipy python-telegram-bot --upgrade setuptools face_recognition opencv-python git+https://github.com/ageitgey/face_recognition_models
+pip install paho-mqtt
+```
+```
+pip install cmake dlib imutils opencv-contrib-python scipy python-telegram-bot --upgrade setuptools face_recognition opencv-python git+https://github.com/ageitgey/face_recognition_models paho-mqtt
 ```
 - Depois, ***deve*** se realizar esse comando antes de rodar um programa:
 ```
