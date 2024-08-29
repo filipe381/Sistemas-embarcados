@@ -1,0 +1,45 @@
+#include <dht11.h>
+
+#define DHT11PIN 7
+#define azul 4 
+#define vermelho 3
+#define verde 2
+
+dht11 DHT11;
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(verde, OUTPUT); 
+  pinMode(vermelho, OUTPUT);
+  pinMode(azul, OUTPUT); 
+}
+
+void loop()
+{
+  Serial.println();
+
+  int chk = DHT11.read(DHT11PIN);
+
+  Serial.print("Humidade (%): ");
+  Serial.println((float)DHT11.humidity, 2);
+
+  Serial.print("Temperatura (C): ");
+  Serial.println((float)DHT11.temperature, 2);
+
+  // Lógica para controle do LED
+  if (DHT11.temperature > 10 && DHT11.temperature < 19.9 ) {
+    digitalWrite(azul, HIGH);
+    digitalWrite(vermelho, LOW); 
+    digitalWrite(verde, LOW);
+  }else if(DHT11.temperature > 20 && DHT11.temperature < 29.9 ) {
+    digitalWrite(verde, HIGH);
+    digitalWrite(azul, LOW);
+    digitalWrite(vermelho, LOW);
+  }else{
+    digitalWrite(verde, LOW);
+    digitalWrite(azul, LOW);
+    digitalWrite(vermelho, HIGH);
+  }
+  delay(3000);
+}
