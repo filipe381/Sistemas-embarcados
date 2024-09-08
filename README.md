@@ -36,6 +36,7 @@ pip install paho-mqtt
 ```
 pip install psutil
 ```
+### Ou, faça esse comando que faz todos os acima
 ```
 pip install cmake dlib imutils opencv-contrib-python scipy python-telegram-bot --upgrade setuptools face_recognition opencv-python git+https://github.com/ageitgey/face_recognition_models paho-mqtt psutil
 ```
