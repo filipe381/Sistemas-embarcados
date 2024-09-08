@@ -6,10 +6,16 @@ import paho.mqtt.client as mqtt
 from imutils import face_utils
 from scipy.spatial import distance as dist
 import face_recognition
+import mediapipe as mp
 
 # Configurações MQTT
 broker = "localhost"
 topic = "projeto/iot"
+
+#Inicializando o mediapipe para detecção de mãos
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(max_num_hands=1)
+mp_drawing = mp.solutions.drawing_utils
 
 def load_reference_face(file_path):
     reference_image = face_recognition.load_image_file(file_path)
@@ -23,7 +29,19 @@ def eye_aspect_ratio(eye):
     ear = (A + B) / (2.0 * C)
     return ear
 
+def detect_hand(frame):
+    # Convertendo o frame para RGB
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    result = hands.process(rgb_frame)
+
+    if result.multi_hand_landmarks:
+        for hand_landmarks in result.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+        return True
+    return False
+
 def face_detection_and_blinking():
+    
     # Configurando o cliente MQTT
     client = mqtt.Client()
     client.connect(broker, 1883, 60)
@@ -32,8 +50,9 @@ def face_detection_and_blinking():
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-    EYE_AR_THRESH = 0.25
-    EYE_AR_CONSEC_FRAMES = 0.1
+    #Variáveis de sensibilidade
+    EYE_AR_THRESH = 0.3
+    EYE_AR_CONSEC_FRAMES = 1
 
     COUNTER = 0
     TOTAL = 0
@@ -42,6 +61,11 @@ def face_detection_and_blinking():
     last_face_detected_time = time.time()
     control = False
     cap = cv2.VideoCapture(0)
+
+    #variáveis de desafio
+    cooldownDesafio = 10
+    ultimoDesafio = time.time()
+    duracaoDesafio = None
 
     while True:
         ret, frame = cap.read()
@@ -101,6 +125,23 @@ def face_detection_and_blinking():
                         cap.release()
                         cv2.destroyAllWindows()
                         return
+
+                #Desafios
+                if last_blink_time is not None and time.time() - ultimoDesafio > cooldownDesafio:
+                    ultimoDesafio = time.time()
+                    duracaoDesafio = ultimoDesafio + 3 #para alterar a duração, altere o valor a direita
+                    desafioFalhou = True 
+                
+                if duracaoDesafio is not None and time.time() < duracaoDesafio:
+                    cv2.putText(frame, "Levante a mao", (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                    if detect_hand(frame):
+                        desafioFalhou = False #a pessoa levantou a mão e o desafio não falhou
+
+                if duracaoDesafio is not None and time.time() >= duracaoDesafio:
+                    if desafioFalhou:
+                        client.publish(topic, "Desafio falhou: mão não levantada.")
+                        cap.release()
+                        cv2.destroyAllWindows()
 
         else:
             last_blink_time = time.time()  # Pausa o temporizador quando nenhum rosto é detectado
