@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 from imutils import face_utils
 from scipy.spatial import distance as dist
 import face_recognition
+import virtuais
 
 # Configurações MQTT
 broker = "localhost"
@@ -107,6 +108,10 @@ def face_detection_and_blinking():
 
         if time.time() - last_face_detected_time > 20:
             client.publish(topic, "Nenhum rosto detectado por mais de 20 segundos.")
+            break
+        
+        if virtuais.check_emulator_processes():
+            client.publish(topic, "Emulador ou webcam virtual detectado.")
             break
 
         if control:
