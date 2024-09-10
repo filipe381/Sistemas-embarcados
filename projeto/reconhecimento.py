@@ -8,6 +8,11 @@ def load_face_encoding(encoding_file="face_encoding.npy"):
         face_encoding = np.load(f)
     return face_encoding  # Retorna a codificação da face
 
+def save_new_reference_image(frame):
+    # Salva a nova imagem de referência
+    cv2.imwrite("reference.jpg", frame)
+    print("Nova imagem de referência salva como reference.jpg")
+
 def compare_face(reference_encoding, tolerance=0.6):
     # Inicializa a captura de vídeo da webcam
     cap = cv2.VideoCapture(0)
@@ -28,6 +33,7 @@ def compare_face(reference_encoding, tolerance=0.6):
                 print("A mesma pessoa foi detectada!")
             else:  # Caso contrário, é uma pessoa diferente
                 print("Outra pessoa foi detectada!")
+                save_new_reference_image(frame)  # Salva a nova imagem de referência
         else:
             print("Nenhuma face detectada!")  # Se nenhuma face for detectada
     else:

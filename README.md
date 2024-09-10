@@ -36,9 +36,12 @@ pip install paho-mqtt
 ```
 pip install psutil
 ```
+```
+pip install mediapipe
+```
 ### Ou, faça esse comando que faz todos os acima
 ```
-pip install cmake dlib imutils opencv-contrib-python scipy python-telegram-bot --upgrade setuptools face_recognition opencv-python git+https://github.com/ageitgey/face_recognition_models paho-mqtt psutil
+pip install cmake dlib imutils opencv-contrib-python scipy python-telegram-bot --upgrade setuptools face_recognition opencv-python git+https://github.com/ageitgey/face_recognition_models paho-mqtt psutil mediapipe
 ```
 - Depois, ***deve*** se realizar esse comando antes de rodar um programa:
 ```

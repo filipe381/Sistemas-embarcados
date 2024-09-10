@@ -1,0 +1,2 @@
+
+mosquitto_pub -h test.mosquitto.org -t "ibmec/iot" -m "Filipe"
