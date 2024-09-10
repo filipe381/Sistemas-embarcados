@@ -1,0 +1,104 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <DHT.h>
+
+// Definir o pino do sensor DHT
+#define DHTPIN 27
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+// Configuração de Wi-Fi e MQTT
+const char* ssid = "Filipe";         
+const char* password = "12345678";   
+const char* mqtt_server = "test.mosquitto.org";  
+const char* mqtt_topic = "ibmec";  // Tópico para o sensor DHT11
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+void connectToMQTT();
+void publishMessage();
+
+void setup() {
+    Serial.begin(115200); 
+    dht.begin();  
+    
+    // Conectar-se ao Wi-Fi
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("\nConectado ao Wi-Fi!");
+    Serial.print("ESP32 IP: ");
+    Serial.println(WiFi.localIP());
+
+    // Configurar o servidor MQTT
+    client.setServer(mqtt_server, 1883);
+
+    // Tentar conectar ao broker MQTT
+    connectToMQTT();
+}
+
+void loop() {
+    if (!client.connected()) {
+        connectToMQTT();  // Tentar reconectar se desconectado
+    }
+    client.loop();
+
+    // Publicar a cada 10 segundos
+    static unsigned long lastMsgTime = 0;
+    if (millis() - lastMsgTime > 10000) {  // A cada 10 segundos
+        lastMsgTime = millis();
+        publishMessage();  // Função para realizar o publish
+    }
+}
+
+// Função para conectar ao broker MQTT
+void connectToMQTT() {
+    Serial.println("Tentando conectar ao broker...");
+
+    while (!client.connected()) {
+        if (client.connect("esp32-client")) {
+            Serial.println("Conectado ao broker");
+            client.subscribe(mqtt_topic);  // Subscrevendo ao tópico
+            Serial.println("Subscrevendo ao tópico: test/dht11");
+        } else {
+            Serial.print("Falha ao conectar ao broker, estado: ");
+            Serial.println(client.state());
+            delay(5000);  // Esperar 5 segundos antes de tentar reconectar
+        }
+    }
+}
+
+// Função para publicar uma mensagem no broker
+void publishMessage() {
+    float temperature = dht.readTemperature();
+    float humidity = dht.readHumidity();
+
+    // Verificar se a leitura foi realizada com sucesso
+    if (isnan(temperature) || isnan(humidity)) {
+        Serial.println("Falha ao ler do sensor DHT11");
+        return;
+    }
+
+    // Criar a mensagem a ser publicada
+    char message[150];
+    
+    // Verificar a umidade e enviar mensagem apropriada
+    if (humidity < 70) {
+        snprintf(message, sizeof(message), "Umidade atual: %.2f%%, Umidade ideal: 70%%. Regue sua planta.", humidity);
+    } else {
+        snprintf(message, sizeof(message), "Umidade atual: %.2f%%", humidity);
+    }
+
+    Serial.print("Publicando mensagem: ");
+    Serial.println(message);
+    
+    // Publicar a mensagem no tópico
+    if (client.publish(mqtt_topic, message)) {
+        Serial.println("Mensagem publicada com sucesso");
+    } else {
+        Serial.println("Falha ao publicar a mensagem");
+    }
+}
