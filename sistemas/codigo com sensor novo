@@ -1,0 +1,27 @@
+const int sensorPin = 27;    // Altere para o pino analógico usado
+const int maxSensorValue = 4095;  // Valor máximo do sensor fora da terra
+const int minSensorValue = 2100;  // Valor mínimo do sensor na água mais úmida possível
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Leia o valor do sensor
+  int sensorValue = analogRead(sensorPin);
+  
+  // Calcule a porcentagem de umidade
+  // Mapeia o valor lido do sensor para a faixa de 0 a 100%
+  int moisturePercent = map(sensorValue, minSensorValue, maxSensorValue, 100, 0);
+  
+  // Garante que a porcentagem está entre 0 e 100
+  moisturePercent = constrain(moisturePercent, 0, 100);
+
+  // Envie o valor para o monitor serial
+  Serial.print("Umidade do Solo: ");
+  Serial.print(moisturePercent);
+  Serial.println("%");
+
+  // Aguarde um pouco antes de ler novamente
+  delay(1000);
+}
