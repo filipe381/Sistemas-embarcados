@@ -1,21 +1,60 @@
-const int sensorPin = 27;    // Altere para o pino analógico usado
-const int maxSensorValue = 4095;  // Valor máximo do sensor fora da terra
-const int minSensorValue = 2100;  // Valor mínimo do sensor na água mais úmida possível
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+// Defina suas credenciais de Wi-Fi
+const char* ssid = "Filipe";
+const char* password = "12345678";
+
+// Defina o endereço do servidor MQTT e a porta
+const char* mqttServer = "test.mosquitto.org";
+const int mqttPort = 1883;
+
+// Defina o tópico MQTT
+const char* topic = "umidade/sensor";
+
+// Configurações do sensor
+const int sensorPin = 27;
+const int maxSensorValue = 4095;
+const int minSensorValue = 2100;
+
+// Crie instâncias dos objetos WiFi e PubSubClient
+WiFiClient wifiClient;
+PubSubClient client(wifiClient);
 
 void setup() {
   Serial.begin(9600);
+  
+  // Conectar ao Wi-Fi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("Conectado ao Wi-Fi");
+
+  // Configurar o servidor MQTT
+  client.setServer(mqttServer, mqttPort);
 }
 
 void loop() {
+  // Conectar ao servidor MQTT se não estiver conectado
+  if (!client.connected()) {
+    reconnect();
+  }
+  
+  // Manter a conexão com o servidor MQTT
+  client.loop();
+
   // Leia o valor do sensor
   int sensorValue = analogRead(sensorPin);
-  
+
   // Calcule a porcentagem de umidade
-  // Mapeia o valor lido do sensor para a faixa de 0 a 100%
   int moisturePercent = map(sensorValue, minSensorValue, maxSensorValue, 100, 0);
-  
-  // Garante que a porcentagem está entre 0 e 100
   moisturePercent = constrain(moisturePercent, 0, 100);
+
+  // Envie o valor para o tópico MQTT
+  String message = String(moisturePercent);
+  client.publish(topic, message.c_str());
 
   // Envie o valor para o monitor serial
   Serial.print("Umidade do Solo: ");
@@ -25,3 +64,21 @@ void loop() {
   // Aguarde um pouco antes de ler novamente
   delay(1000);
 }
+
+void reconnect() {
+  // Loop até reconectar
+  while (!client.connected()) {
+    Serial.print("Tentando conectar ao MQTT...");
+    
+    // Tenta conectar
+    if (client.connect("ESP32Client", mqttUser, mqttPassword)) {
+      Serial.println("Conectado");
+    } else {
+      Serial.print("Falha, rc=");
+      Serial.print(client.state());
+      Serial.println(" Tentar novamente em 5 segundos");
+      delay(5000);
+    }
+  }
+}
+
