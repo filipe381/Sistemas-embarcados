@@ -1,8 +1,5 @@
 import cv2
 import time
-import telegram
-import idTelegram
-import asyncio
 import face_recognition
 import threading
 
@@ -11,6 +8,8 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 # Inicializar a webcam com resolução reduzida
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_EXPOSURE, -5)  # Reset to default exposure
+
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
@@ -18,10 +17,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 start_time = None
 face_detected = False
 
-# Inicializar o bot do Telegram
-bot_token = '7390853298:AAFEZhfjtMaB7lfNGk4NjjWsQxNYp42olUs'
-chat_id = asyncio.run(idTelegram.get_chat_id())
-bot = telegram.Bot(token=bot_token)
+# Inicializar o bot do Telegra
 
 # Carregar a foto de referência e extrair as características do rosto
 reference_image = face_recognition.load_image_file('reference.jpg')
@@ -67,7 +63,7 @@ def process_frame():
             cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
         else:
             if face_detected and (time.time() - start_time) > 5:
-                bot.send_message(chat_id=chat_id, text="O funcionário saiu por 5 segundos.")
+               
                 cv2.putText(frame, 'Volte ao trabalho!', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
                 break
 
