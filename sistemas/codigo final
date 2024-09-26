@@ -1,0 +1,103 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+// Defina suas credenciais de Wi-Fi
+const char* ssid = "Filipe";
+const char* password = "12345678";
+
+// Defina o endereço do servidor MQTT e a porta
+const char* mqttServer = "broker.hivemq.com"; // Broker
+const int mqttPort = 1883;
+
+// Defina o tópico MQTT
+const char* topic = "umidade/sensor";
+const char* alertTopic = "umidade/alerta"; // Novo tópico para alertas
+
+// Configurações do sensor
+const int sensorPin = 27;
+const int maxSensorValue = 4095;
+const int minSensorValue = 2100;
+
+// Crie instâncias dos objetos WiFi e PubSubClient
+WiFiClient wifiClient;
+PubSubClient client(wifiClient);
+
+void setup() {
+  Serial.begin(9600);
+  
+  // Conectar ao Wi-Fi
+  WiFi.begin(ssid, password);
+  Serial.print("Conectando ao Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConectado ao Wi-Fi");
+
+  // Configurar o servidor MQTT
+  client.setServer(mqttServer, mqttPort);
+}
+
+void loop() {
+  // Conectar ao servidor MQTT se não estiver conectado
+  if (!client.connected()) {
+    reconnect();
+  }
+
+  // Manter a conexão com o servidor MQTT
+  client.loop();
+
+  // Leia o valor do sensor
+  int sensorValue = analogRead(sensorPin);
+  Serial.print("Valor do sensor lido: ");
+  Serial.println(sensorValue);
+
+  // Calcule a porcentagem de umidade
+  int moisturePercent = map(sensorValue, minSensorValue, maxSensorValue, 100, 0);
+  moisturePercent = constrain(moisturePercent, 0, 100);
+
+  // Envie o valor para o tópico MQTT
+  String message = String(moisturePercent);
+  if (client.publish(topic, message.c_str())) {
+      Serial.print("Mensagem enviada: ");
+      Serial.println(message);
+  } else {
+      Serial.println("Falha ao enviar a mensagem");
+  }
+
+  // Envie o valor para o monitor serial
+  Serial.print("Umidade do Solo: ");
+  Serial.print(moisturePercent);
+  Serial.println("%");
+
+  // Verifique se a umidade está abaixo de 20%
+  if (moisturePercent < 20) {
+      String alertMessage = "A umidade está crítica: " + String(moisturePercent) + "%";
+      if (client.publish(alertTopic, alertMessage.c_str())) {
+          Serial.print("Alerta enviado: ");
+          Serial.println(alertMessage);
+      } else {
+          Serial.println("Falha ao enviar alerta");
+      }
+  }
+
+  // Aguarde um pouco antes de ler novamente
+  delay(2000);  // Aumentado para dar mais tempo
+}
+
+void reconnect() {
+  // Loop até reconectar
+  while (!client.connected()) {
+    Serial.print("Tentando conectar ao MQTT...");
+    
+    // Tenta conectar
+    if (client.connect("ESP32Client")) {
+      Serial.println("Conectado");
+    } else {
+      Serial.print("Falha, rc=");
+      Serial.print(client.state());
+      Serial.println(" - Tentar novamente em 5 segundos");
+      delay(5000);
+    }
+  }
+}
