@@ -1,0 +1,36 @@
+#define pinoAnalog A0 // Define o pino A0 como "pinoAnalog"
+#define pinoRele 8 // Define o pino 8 como "pinoRele"
+#define pino5V 7 // Define o pino 7 como "pino5V"
+
+int ValAnalogIn; 
+bool irrigando = false; 
+
+void setup() {
+    Serial.begin(9600); 
+    Serial.println("www.usinainfo.com.br"); 
+    pinMode(pinoRele, OUTPUT); 
+    pinMode(pino5V, OUTPUT); 
+    digitalWrite(pino5V, HIGH); 
+}
+
+void loop() {
+    ValAnalogIn = analogRead(pinoAnalog); 
+    int Porcento = map(ValAnalogIn, 0, 1023, 0, 100); 
+
+    Serial.print(Porcento); 
+    Serial.println("%"); 
+
+    int limiteIrrigacao = 30; 
+
+    if (Porcento <= limiteIrrigacao && !irrigando) { 
+        Serial.println("Irrigando a planta ..."); 
+        digitalWrite(pinoRele, HIGH); 
+        irrigando = true; 
+    } else if (Porcento > limiteIrrigacao && irrigando) {
+        Serial.println("Planta Irrigada ..."); 
+        digitalWrite(pinoRele, LOW); 
+        irrigando = false; 
+    }
+
+    delay(1000); 
+}
